@@ -10,7 +10,7 @@ Even though this is a tool to get around cheat prevention measures, this is inte
 **This tool has many flaws and will be detected. You will get banned for using this.**
 
 ## Usage
-1. Launch the game x64dbg with ScyllaHide on VMProtect
-2. Run to the entrypoint.
+1. Launch the game with x64dbg with ScyllaHide on the VMProtect preset
+2. Run to the game's entrypoint
 3. Inject the DLL with Cheat Engine
 4. Go!
