@@ -4,6 +4,7 @@
 
 class PassthroughBackend : public Backend {
 public:
+	std::optional<SC_HANDLE> OpenSCManagerWHook(LPCWSTR lpMachineName, LPCWSTR lpDatabaseName, DWORD dwDesiredAccess);
 	std::optional<SC_HANDLE> CreateServiceWHook(LPCWSTR lpServiceName);
 	std::optional<SC_HANDLE> OpenServiceWHook(LPCWSTR lpServiceName);
 	std::optional<BOOL> StartServiceWHook(SC_HANDLE hService);

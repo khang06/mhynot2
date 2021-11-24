@@ -4,6 +4,9 @@
 #include "PassthroughBackend.h"
 #include "mhyprot2.h"
 
+std::optional<SC_HANDLE> PassthroughBackend::OpenSCManagerWHook(LPCWSTR lpMachineName, LPCWSTR lpDatabaseName, DWORD dwDesiredAccess) {
+    return {};
+}
 std::optional<SC_HANDLE> PassthroughBackend::CreateServiceWHook(LPCWSTR lpServiceName) {
 	return {};
 }

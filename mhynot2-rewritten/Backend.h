@@ -7,6 +7,7 @@
 class Backend {
 public:
 	// service hooks, only passing what's necessary
+	virtual std::optional<SC_HANDLE> OpenSCManagerWHook(LPCWSTR lpMachineName, LPCWSTR lpDatabaseName, DWORD dwDesiredAccess) = 0;
 	virtual std::optional<SC_HANDLE> CreateServiceWHook(LPCWSTR lpServiceName) = 0;
 	virtual std::optional<SC_HANDLE> OpenServiceWHook(LPCWSTR lpServiceName) = 0;
 	virtual std::optional<BOOL> StartServiceWHook(SC_HANDLE hService) = 0;

@@ -23,6 +23,9 @@ DWORD WINAPI HeartbeatThread(LPVOID lpParameter) {
     return 0;
 }
 
+std::optional<SC_HANDLE> EmulatorBackend::OpenSCManagerWHook(LPCWSTR lpMachineName, LPCWSTR lpDatabaseName, DWORD dwDesiredAccess) {
+    return MANAGER_DUMMY_HANDLE;
+}
 std::optional<SC_HANDLE> EmulatorBackend::CreateServiceWHook(LPCWSTR lpServiceName) {
     if (!wcsncmp(lpServiceName, L"mhyprot2", 256)) {
         service_created = true;

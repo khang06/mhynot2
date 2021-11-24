@@ -183,6 +183,16 @@ BOOL WINAPI custom_CloseServiceHandle(SC_HANDLE hService) {
     return ret;
 }
 
+auto orig_OpenSCManagerW = (SC_HANDLE(WINAPI*)(LPCWSTR, LPCWSTR, DWORD))nullptr;
+SC_HANDLE WINAPI custom_OpenSCManagerW(LPCWSTR lpMachineName, LPCWSTR lpDatabaseName, DWORD dwDesiredAccess) {
+    auto hook_ret = backend->OpenSCManagerWHook(lpMachineName, lpDatabaseName, dwDesiredAccess);
+    auto ret = hook_ret.has_value() ? hook_ret.value() :
+        orig_OpenSCManagerW(lpMachineName, lpDatabaseName, dwDesiredAccess);
+    printf("OpenSCManagerW (lpMachineName %ls, lpDatabaseName %ls, dwDesiredAccess 0x%x) called\n",
+        lpMachineName != NULL ? lpMachineName : L"NULL", lpDatabaseName != NULL ? lpDatabaseName : L"NULL", dwDesiredAccess);
+    return ret;
+}
+
 auto orig_CreateFileW = (HANDLE(WINAPI*)(LPCWSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE))nullptr;
 HANDLE WINAPI custom_CreateFileW(
     LPCWSTR               lpFileName,
@@ -230,6 +240,7 @@ void InstallHooks() {
     MAKE_HOOK(ControlService);
     MAKE_HOOK(DeleteService);
     MAKE_HOOK(CloseServiceHandle);
+    MAKE_HOOK(OpenSCManagerW);
     MAKE_HOOK(CreateFileW);
 }
 #pragma endregion Helpers, hooked functions, etc
@@ -237,8 +248,13 @@ void InstallHooks() {
 // kill the actual mhyprot2 service
 void KillService() {
     auto sc = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-    if (sc == NULL)
+    if (sc == NULL) {
+        if (GetLastError() == ERROR_ACCESS_DENIED) {
+            printf("OpenSCManager failed because we aren't running as admin! continuing as usual...\n");
+            return;
+        }
         Common::Panic("OpenSCManager failed (%d)\n", GetLastError());
+    }
 
     auto service = OpenService(sc, L"mhyprot2", DELETE);
     if (service == NULL) {
