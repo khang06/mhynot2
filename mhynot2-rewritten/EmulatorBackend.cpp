@@ -63,7 +63,7 @@ std::optional<BOOL> EmulatorBackend::DeleteServiceHook(SC_HANDLE hService) {
     return TRUE;
 }
 std::optional<BOOL> EmulatorBackend::CloseServiceHandleHook(SC_HANDLE hService) {
-    if (hService == DUMMY_HANDLE)
+    if (hService == DUMMY_HANDLE || hService == MANAGER_DUMMY_HANDLE)
         return TRUE;
     return {};
 }
