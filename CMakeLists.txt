@@ -3,7 +3,10 @@ cmake_minimum_required(VERSION 3.16)
 # Common stuff
 
 # You might need to adjust this
-set(SHLWAPI_PATH /usr/x86_64-w64-mingw32/mingw/lib/libshlwapi.a)
+set(MINGW_PATH /usr/x86_64-w64-mingw32)
+
+set(SHLWAPI_PATH ${MINGW_PATH}/mingw/lib/libshlwapi.a)
+set(WINPTHREAD_PATH ${MINGW_PATH}/usr/lib/libwinpthread.a)
 
 set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)
 set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)
@@ -38,6 +41,7 @@ target_include_directories(mhynot2 PRIVATE minhook/include)
 
 target_link_libraries(mhynot2 ${CMAKE_SOURCE_DIR}/minhook/libMinHook.a)
 target_link_libraries(mhynot2 ${SHLWAPI_PATH})
+target_link_libraries(mhynot2 ${WINPTHREAD_PATH})
 
 target_link_options(mhynot2 PRIVATE -static-libgcc -static-libstdc++)
 
