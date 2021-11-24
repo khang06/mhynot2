@@ -18,3 +18,9 @@ or...
 2. Run to the game's entrypoint
 3. Inject the DLL with Cheat Engine
 4. Go!
+
+## Linux build
+1. Init/update git submodules
+1. Go to `minhook` directory and build it with `CROSS_PREFIX=x86_64-w64-mingw32- make -f build/MinGW/Makefile`
+1. Run `mkdir build && cd build && cmake .. && make -j256`
+1. Grab `mhynot2.dll` and inject it together with `libwinpthread-1.dll`

@@ -386,3 +386,9 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Vim temp files
+.*.swp
+
+# CMake build dir
+/build/
