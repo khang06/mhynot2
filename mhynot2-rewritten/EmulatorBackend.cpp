@@ -1,5 +1,6 @@
 #include <cassert>
-#include <Windows.h>
+#define NOMINMAX // We're using std::min here
+#include <windows.h>
 #include <psapi.h>
 #include <shlwapi.h>
 
@@ -355,7 +356,7 @@ void EmulatorBackend::HandleIOCTLResponse(DWORD control_code, std::vector<uint8_
         auto* res = (EnumProcessListResponse*)(output.data() + sizeof(uint32_t));
         printf("process count: %d\n", count);
         if (count <= req_count) {
-            int iter_count = min(count, 5);
+            int iter_count = std::min(count, 5u);
             printf("first %d processes:\n", iter_count);
             for (int i = 0; i < iter_count; i++) {
                 printf("path: %ls, eprocess: %p, is 64-bit: %s\n", res[i].path, res[i].eprocess, res[i].is_64bit ? "yes" : "no");
@@ -371,7 +372,7 @@ void EmulatorBackend::HandleIOCTLResponse(DWORD control_code, std::vector<uint8_
         auto* res = (ListProcessModuleResponse*)(output.data() + sizeof(uint32_t));
         printf("module count: %d\n", count);
         if (count <= req_count) {
-            int iter_count = min(count, 5);
+            int iter_count = std::min(count, 5u);
             printf("first %d modules:\n", iter_count);
             for (int i = 0; i < iter_count; i++) {
                 printf("path: %ls, base: %p, size: 0x%x\n", res[i].path, res[i].base, res[i].size);
