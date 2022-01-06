@@ -55,7 +55,7 @@ std::optional<std::vector<uint8_t>> PassthroughBackend::HandleIOCTLRequest(DWORD
     case (DWORD)MhyProt2Ioctl::RWMemory: {
         assert(input.size() == sizeof(RWMemoryRequest));
         auto* req = (RWMemoryRequest*)input.data();
-        printf("mode: %s, pid: 0x%x (%ls), to_addr: %p, from_addr: %p, size: 0x%d\n",
+        printf("mode: %s, pid: 0x%x (%ls), to_addr: %p, from_addr: %p, size: 0x%x\n",
             req->mode ? "this -> target" : "target -> this", req->target_pid, Common::PIDToProcessName(req->target_pid).c_str(), req->to_addr, req->from_addr, req->size);
         break;
     }
