@@ -200,18 +200,29 @@ std::optional<std::vector<uint8_t>> EmulatorBackend::HandleIOCTLRequest(DWORD co
 
         assert(req->target_pid == GetCurrentProcessId());
 
-        // probably should virtualprotect if necessary, but it seems fine for now
-        memcpy(req->to_addr, req->from_addr, req->size);
-
-        // TODO: technically still getting detected anyways
-        if (req->from_addr == &__ImageBase) {
-            printf(RED "Shitty evasive measure running!\n" WHT);
-            memset(req->to_addr, 0, req->size);
-        }
+        // check if the memory is actually writable
+        // yes, the actual driver will return 0 if the memory is not writable
+        MEMORY_BASIC_INFORMATION mem_info = {};
+        // i really don't care about anything other than the protection of the first page
+        if (VirtualQuery(req->to_addr, &mem_info, 0x1000) == 0)
+            Common::Panic("VirtualQuery failed!");
 
         auto out = std::vector<uint8_t>();
         out.resize(4);
-        *(uint32_t*)out.data() = 0;
+        if (mem_info.Protect != PAGE_EXECUTE_READWRITE && mem_info.Protect != PAGE_READWRITE) {
+            // memory not writable
+            *(uint32_t*)out.data() = 0;
+        } else {
+            memcpy(req->to_addr, req->from_addr, req->size);
+
+            // TODO: technically still getting detected anyways
+            if (req->from_addr == &__ImageBase) {
+                printf(RED "Shitty evasive measure running!\n" WHT);
+                memset(req->to_addr, 0, req->size);
+            }
+
+            *(uint32_t*)out.data() = req->size;
+        }
         output = out;
         break;
     }

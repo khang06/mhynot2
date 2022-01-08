@@ -36,10 +36,15 @@ std::vector<uint8_t> PacketCrypt::Crypt(void* data, size_t size, uint64_t key) {
     auto ret = std::vector<uint8_t>(size);
     size_t idx = 0;
     auto* data_uint64 = (uint64_t*)data;
+    size_t handled = 0;
     for (size_t i = 0; i < size / 8; i++) {
         uint64_t offset_key = key + i * 16;
         ((uint64_t*)ret.data())[i] = offset_key ^ mt64_update(&mt) ^ data_uint64[i];
         mt.mti %= 312;
+        handled += 8;
     }
+    // the remainder is just copied as-is to the end
+    if (remainder > 0)
+        memcpy(&ret[handled], &((char*)data)[handled], remainder);
     return ret;
 }
