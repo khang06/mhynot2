@@ -1,4 +1,5 @@
-#include <Windows.h>
+#define NOMINMAX // We're using std::min here
+#include <windows.h>
 #include <MinHook.h>
 #include <mutex>
 #include <cassert>
@@ -23,10 +24,10 @@ inline MH_STATUS MH_CreateHookEx(LPVOID pTarget, LPVOID pDetour, T** ppOriginal)
 }
 
 // why do i even have to make 3 macros for 1???
-#define MAKE_HOOK(x) ret = MH_CreateHookEx(x, MAKE_HOOK_HIDDEN1(x), MAKE_HOOK_HIDDEN2(x)); \
+#define MAKE_HOOK(x) ret = MH_CreateHookEx(reinterpret_cast<LPVOID>(x), reinterpret_cast<LPVOID>(MAKE_HOOK_HIDDEN1(x)), (MAKE_HOOK_HIDDEN2(x))); \
                      if (ret != MH_OK) \
                          Common::Panic("Failed to install "#x" hook (%d)", ret); \
-                     ret = MH_EnableHook(x); \
+                     ret = MH_EnableHook(reinterpret_cast<LPVOID>(x)); \
                      if (ret != MH_OK) \
                          Common::Panic("Failed to enable "#x" hook (%d)", ret); \
                      printf("Installed hook for "#x"\n");
@@ -71,7 +72,7 @@ BOOL WINAPI custom_DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LPVOID
     if (custom_output.has_value()) {
         // this doesn't handle lpOverlapped but who cares lol
         auto output = custom_output.value();
-        auto ret_size = min(output.size(), nOutBufferSize);
+        auto ret_size = std::min((DWORD)output.size(), nOutBufferSize);
         *lpBytesReturned = (DWORD)ret_size;
         memcpy(lpOutBuffer, output.data(), ret_size);
     }
@@ -337,9 +338,22 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH: {
-        // make the console
-        if (!AllocConsole())
-            Common::Panic("Failed to create a console window");
+        const wchar_t wine_key[] = L"Software\\Wine";
+        HKEY hKey;
+        bool on_wine = false;
+        LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, wine_key, 0, KEY_READ, &hKey);
+
+        on_wine = result == ERROR_SUCCESS;
+
+        if (!on_wine) {
+          // Windows
+          // make the console
+          if (!AllocConsole())
+              Common::Panic("Failed to create a console window");
+        } else {
+          RegCloseKey(hKey);
+          puts("Running on Wine, skipping AllocConsole");
+        }
         freopen("CONOUT$", "w", stdout);
 
         // get some fancy console colors!

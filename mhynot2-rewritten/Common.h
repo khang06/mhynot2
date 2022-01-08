@@ -1,6 +1,10 @@
 #pragma once
 
-#include <Windows.h>
+#ifndef NOMINMAX
+#define NOMINMAX // We're using std::min here
+#endif // NOMINMAX
+
+#include <windows.h>
 #include <cstdarg>
 #include <cstdio>
 #include <string>

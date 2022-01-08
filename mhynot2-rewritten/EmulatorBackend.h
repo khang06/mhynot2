@@ -4,8 +4,8 @@
 
 class EmulatorBackend : public Backend {
 public:
-	static constexpr SC_HANDLE DUMMY_HANDLE = (SC_HANDLE)0x0B00B135;
-	static constexpr SC_HANDLE MANAGER_DUMMY_HANDLE = (SC_HANDLE)0xD0D0CACA;
+	const SC_HANDLE DUMMY_HANDLE = (SC_HANDLE)0x0B00B135;
+	const SC_HANDLE MANAGER_DUMMY_HANDLE = (SC_HANDLE)0xD0D0CACA;
 
 	std::optional<SC_HANDLE> OpenSCManagerWHook(LPCWSTR lpMachineName, LPCWSTR lpDatabaseName, DWORD dwDesiredAccess);
 	std::optional<SC_HANDLE> CreateServiceWHook(LPCWSTR lpServiceName);
