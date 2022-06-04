@@ -3,7 +3,7 @@
 
 Cheating is bad, but I think requiring a kernel driver to play a (mostly) single-player game is worse.
 
-mhynot2 is a hook DLL which hooks into various API functions to emulate the functionality of mhyprot2.sys without actually running a driver. Tested on Genshin Impact 2.2, 2.3, 2.4, 2.5 (mhyprot3.sys not used WTF?????????), and 2.6 (mhyprot3.sys STILL not used WTF??????????????????).
+mhynot2 is a hook DLL which hooks into various API functions to emulate the functionality of mhyprot2.sys without actually running a driver. Tested on Genshin Impact 2.2, 2.3, 2.4, 2.5 (mhyprot3.sys not used WTF?????????), 2.6 (mhyprot3.sys used for some people?), and 2.7 (THEY WENT BACK TO MHYPROT2!!!!!).
 
 Even though this is a tool to get around cheat prevention measures, this is intended as a tool for research and experimental purposes and isn't specifically designed for cheating.
 
