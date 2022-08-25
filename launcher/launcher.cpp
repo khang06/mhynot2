@@ -6,6 +6,7 @@ int inject_library(HANDLE hProcess, const char* dll)
 {
     auto loadlibrary = LoadLibraryA; // i actually had no idea that the address of kernel32 is the same between all processes
     auto mem = VirtualAllocEx(hProcess, NULL, strlen(dll) + 1, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    printf("Injecting library %s\n", dll);
     printf("LoadLibraryA %p\n", loadlibrary);
     printf("allocated path addr %p\n", mem);
     if (!mem) {
@@ -30,7 +31,13 @@ int inject_library(HANDLE hProcess, const char* dll)
 
     printf("waiting for the dll loading thread to exit\n");
     WaitForSingleObject(new_thread, INFINITE);
-    printf("looks like the dll injected properly\n");
+
+    DWORD ExitCode = 0;
+    if (GetExitCodeThread(new_thread, &ExitCode) == 0) {
+      printf("Loading thread EPIC FAIL: code %d, GLE 0x%x\n", ExitCode, GetLastError());
+    } else {
+      printf("looks like the dll injected properly\n");
+    }
 
     VirtualFreeEx(hProcess, mem, 0, MEM_RELEASE);
 
